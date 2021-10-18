@@ -20,6 +20,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// protected routes
+Route::group(['middleware' => 'auth:sanctum'], function(){
+    Route::post('/addLike', [PostController::class, 'addLike']);
+
+    Route::delete('/addLike', [PostController::class, 'removeLike']);
+});
+
 Route::post('/signup', [Authentication::class, 'signUpHandler']);
 
 Route::post('/login', [Authentication::class, 'loginHandler']);
