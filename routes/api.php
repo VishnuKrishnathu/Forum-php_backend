@@ -16,6 +16,10 @@ use App\Http\Controllers\PostController;
 |
 */
 
+/**
+ * TODO: Need to add the other route to the auth:sanctu middleware
+ */
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });

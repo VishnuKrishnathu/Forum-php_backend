@@ -30,10 +30,9 @@ class PostController extends Controller
             ->leftJoinSub($subquery, "L", function($join){
                 global $request;
                 $join->on('questions.id', '=', 'L.post_id');
-                // ->where('likes.user_id', '=', $request->user_id);
             })
-        ->select('questions.question', 'questions.likes', 'questions.comments', 'users.username', 'questions.created_at', 'questions.id as questions_id', 'L.id as likes_id')
-        ->paginate(15);
+            ->select('questions.question', 'questions.likes', 'questions.comments', 'users.username', 'questions.created_at', 'questions.id as questions_id', 'L.id as likes_id')
+            ->paginate(15);
 
         return response($questions, 200);
     }
@@ -47,14 +46,19 @@ class PostController extends Controller
             'updated_at' => now()
         ]);
 
+        $incrementlike = DB::table('questions')->where('id', $request->postId)->increment('likes');
+
         return response(["message" => "User has successfuly liked the post"], 201);
     }
 
     function removeLike(Request $request){
+        error_log($request->userId);
         $removelike = DB::table('likes')->where(
             'post_id', '=', $request->postId, 'AND',
             'user_id', '=', $request->userId
         )->delete();
+
+        $decrementlike = DB::table('questions')->where('id', $request->postId)->increment('likes', -1);
 
         return response(["message" => "Like deleted successfuly"], 204);
     }

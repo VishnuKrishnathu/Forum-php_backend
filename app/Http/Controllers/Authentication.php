@@ -15,14 +15,16 @@ class Authentication extends Controller
         $newUser->username= $request->username;
         $newUser->email = $request->email;
         $newUser->password = Hash::make($request->password);
+        $newUser->created_at = now();
+        $newUser->updated_at = now();
         $newUser->save();
         return ["success" => true];
     }
 
     function loginHandler(Request $request){
         $user = User::where('username', $request->username)
-            ->select('id','username', 'password', 'email')
-            ->first();
+        ->select('id','username', 'email', 'password')->get()[0];
+        // return $user;
         if($user != NULL){
             //compares the input password
             if(!Hash::check($request->password, $user->password)) {return response(["message" => "User found"], 200);}
