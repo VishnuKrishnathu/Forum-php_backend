@@ -38,3 +38,7 @@ Route::post('/login', [Authentication::class, 'loginHandler']);
 Route::post('/ask-question', [PostController::class, 'askQuestion']);
 
 Route::post('/get-questions', [PostController::class, 'allQuestions']);
+
+Route::post('/get-avatar', [PostController::class, 'getAvatar']);
+
+Route::post('/change-avatar', [PostController::class, 'changeAvatar']);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Question;
+use App\Models\Avatar;
 
 class PostController extends Controller
 {
@@ -61,6 +62,57 @@ class PostController extends Controller
         $decrementlike = DB::table('questions')->where('id', $request->postId)->increment('likes', -1);
 
         return response(["message" => "Like deleted successfuly"], 204);
+    }
+
+    /**
+     * Avatar modification apis
+     */
+
+    function changeAvatar(Request $request){
+        $table_avatar = DB::table('avatar')->where('users_id', '=', $request->usersId)->select(
+            'seed', 'mouth', 'eyebrows',
+            'hair', 'eyes', 'nose',
+            'ears', 'shirt', 'earrings',
+            'glasses', 'facialHair', 'shirtColor',
+            'mouthColor', 'hairColor', 'glassesColor',
+            'facialHairColor', 'eyebrowColor', 'eyeShadowColor',
+            'earringColor', 'baseColor'
+        )->first();
+
+        if($table_avatar == NULL){
+            $avatar = new Avatar;
+            $avatar->users_id = $request->usersId;
+            $avatar->seed = $request->seed;
+            $avatar->mouth = $request->mouth;
+            $avatar->eyebrows = $request->eyebrows;
+            $avatar->hair = $request->hair;
+            $avatar->eyes = $request->eyes;
+            $avatar->nose = $request->nose;
+            $avatar->ears = $request->ears;
+            $avatar->shirt = $request->shirt;
+            $avatar->earrings = $request->earrings;
+            $avatar->glasses = $request->glasses;
+            $avatar->facialHair = $request->facialHair;
+            $avatar->shirtColor = $request->shirtColor;
+            $avatar->mouthColor = $request->mouthColor;
+            $avatar->hairColor = $request->hairColor;
+            $avatar->glassesColor = $request->glassesColor;
+            $avatar->facialHairColor= $request->facialHairColor;
+            $avatar->eyebrowColor= $request->eyebrowColor;
+            $avatar->eyeShadowColor= $request->eyeShadowColor;
+            $avatar->earringColor= $request->earringColor;
+            $avatar->baseColor= $request->baseColor;
+            $avatar->save();
+            return $avatar;
+        }else{
+            return $table_avatar;
+        }
+    }
+
+    function getAvatar(Request $request){
+        $avatar = Avatar::where('users_id', $request->usersId)->get();
+
+        return $avatar;
     }
 
 }
