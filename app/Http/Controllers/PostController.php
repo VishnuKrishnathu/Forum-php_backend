@@ -36,6 +36,7 @@ class PostController extends Controller
             ->paginate(15);
 
         return response($questions, 200);
+        // return response([ "questions" =>$questions, "body" => $request->user()], 200);
     }
 
     function addLike(Request $request)
@@ -53,7 +54,6 @@ class PostController extends Controller
     }
 
     function removeLike(Request $request){
-        error_log($request->userId);
         $removelike = DB::table('likes')->where(
             'post_id', '=', $request->postId, 'AND',
             'user_id', '=', $request->userId
@@ -66,6 +66,7 @@ class PostController extends Controller
 
     /**
      * Avatar modification apis
+     * @param usersId // int
      */
 
     function changeAvatar(Request $request){
@@ -103,16 +104,41 @@ class PostController extends Controller
             $avatar->earringColor= $request->earringColor;
             $avatar->baseColor= $request->baseColor;
             $avatar->save();
-            return $avatar;
+            return response([
+                "message" => "An avatar has beem created"
+            ], 201);
         }else{
-            return $table_avatar;
+            $req_keys = $request->all();
+            unset($req_keys["usersId"]);
+            $table_update = DB::table('avatar')->where('users_id', $request->usersId)
+            ->update($req_keys);
+
+            if($table_update == 1){
+                return response(["message" => "Your avatar has been updated successfuly"], 201);
+            }else{
+                return response(["message" => "Error in updating the avatar"], 400);
+            }
         }
     }
 
     function getAvatar(Request $request){
-        $avatar = Avatar::where('users_id', $request->usersId)->get();
+        $avatar = Avatar::where('users_id', $request->user()->id)->select(
+            'seed', 'mouth', 'eyebrows',
+            'hair', 'eyes', 'nose',
+            'ears', 'shirt', 'earrings',
+            'glasses', 'facialHair', 'shirtColor',
+            'mouthColor', 'hairColor', 'glassesColor',
+            'facialHairColor', 'eyebrowColor', 'eyeShadowColor',
+            'earringColor', 'baseColor'
+        )->first();
 
-        return $avatar;
+        if($avatar != NULL){
+            return $avatar;
+        }
+        else{
+            return response(["seed" => $request->user()->username], 201);
+        }
+
     }
 
 }
