@@ -25,30 +25,15 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// Route::middleware('auth:sanctum')->get('/get-avatar', function(Request $request){
-//         $avatar = Avatar::where('users_id', $request->user()->id)->select(
-//             'seed', 'mouth', 'eyebrows',
-//             'hair', 'eyes', 'nose',
-//             'ears', 'shirt', 'earrings',
-//             'glasses', 'facialHair', 'shirtColor',
-//             'mouthColor', 'hairColor', 'glassesColor',
-//             'facialHairColor', 'eyebrowColor', 'eyeShadowColor',
-//             'earringColor', 'baseColor'
-//         )->first();
-//         if($avatar != NULL){
-//             return $avatar;
-//         }
-//         else{
-//             response
-//         }
-
-// });
-
 // protected routes
 Route::group(['middleware' => 'auth:sanctum'], function(){
     // likes
     Route::post('/addLike', [PostController::class, 'addLike']);
     Route::delete('/addLike', [PostController::class, 'removeLike']);
+
+    // comments routes
+    Route::post('/add-comment', [PostController::class, 'addComment']);
+    Route::post('/get-comments', [PostController::class, 'getComments']);
 
     // avatar routes
     Route::post('/change-avatar', [PostController::class, 'changeAvatar']);

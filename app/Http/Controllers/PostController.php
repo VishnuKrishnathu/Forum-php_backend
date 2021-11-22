@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Question;
 use App\Models\Avatar;
+use App\Models\Comment;
+
 
 class PostController extends Controller
 {
@@ -53,7 +55,8 @@ class PostController extends Controller
         return response(["message" => "User has successfuly liked the post"], 201);
     }
 
-    function removeLike(Request $request){
+    function removeLike(Request $request)
+    {
         $removelike = DB::table('likes')->where(
             'post_id', '=', $request->postId, 'AND',
             'user_id', '=', $request->userId
@@ -64,12 +67,33 @@ class PostController extends Controller
         return response(["message" => "Like deleted successfuly"], 204);
     }
 
+    function addComment(Request $request)
+    {
+        $comment = new Comment;
+        $comment->users_id = $request->user()->id;
+        $comment->comment = $request->comment;
+        $comment->question_id = $request->questionId;
+        $comment->save();
+
+        return response(["message" => "Comments successfully added to the database"], 201);
+    }
+
+    function getComments(Request $request)
+    {
+        $comments = DB::table('comments')->where(
+            'question_id'. '=', $request->questionId
+        )->select('comment', 'users_id')->paginate(10);
+
+        return $comments;
+    }
+
     /**
      * Avatar modification apis
      * @param usersId // int
      */
 
-    function changeAvatar(Request $request){
+    function changeAvatar(Request $request)
+    {
         $table_avatar = DB::table('avatar')->where('users_id', '=', $request->usersId)->select(
             'seed', 'mouth', 'eyebrows',
             'hair', 'eyes', 'nose',
