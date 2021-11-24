@@ -38,7 +38,6 @@ class PostController extends Controller
             ->paginate(15);
 
         return response($questions, 200);
-        // return response([ "questions" =>$questions, "body" => $request->user()], 200);
     }
 
     function addLike(Request $request)
@@ -80,9 +79,15 @@ class PostController extends Controller
 
     function getComments(Request $request)
     {
-        $comments = DB::table('comments')->where(
-            'question_id'. '=', $request->questionId
-        )->select('comment', 'users_id')->paginate(10);
+        $comments = DB::table('comments')
+        ->join('users', 'comments.users_id', '=', 'users.id')
+        ->where(
+            'question_id', '=', $request->questionId
+        )->select(
+            'comments.comment', 
+            'comments.users_id',
+            'users.username'
+        )->paginate(10);
 
         return $comments;
     }
